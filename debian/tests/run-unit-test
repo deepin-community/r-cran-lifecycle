@@ -1,0 +1,26 @@
+#!/bin/sh -e
+
+pkgname=lifecycle
+debname=r-cran-lifecycle
+
+if [ "$AUTOPKGTEST_TMP" = "" ] ; then
+    AUTOPKGTEST_TMP=`mktemp -d /tmp/${debname}-test.XXXXXX`
+    trap "rm -rf $AUTOPKGTEST_TMP" 0 INT QUIT ABRT PIPE TERM
+fi
+cd $AUTOPKGTEST_TMP
+cp -a /usr/share/doc/$debname/tests/* $AUTOPKGTEST_TMP
+gunzip -r *
+
+# FIXME: Hack around a problematic test
+# One test results in
+#       -- 1. Error: Searches with entities work (#241) (@test-xml_find.R#136)  --------
+#       Can't find `tests/testthat` in current directory.
+# The following circumvents this by some not so clean trick
+mkdir testthat/tests
+ln -s $(pwd)/testthat testthat/tests/testthat
+
+for testfile in *.R; do
+    echo "BEGIN TEST $testfile"
+    LC_ALL=C.UTF-8 R --no-save < $testfile
+done
+

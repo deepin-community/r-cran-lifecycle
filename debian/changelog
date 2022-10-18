@@ -1,0 +1,48 @@
+r-cran-lifecycle (1.0.1-1) unstable; urgency=medium
+
+  * Team Upload.
+  [ Andreas Tille ]
+  * Disable reprotest
+
+  [ Nilesh Patra ]
+  * Standards-Version: 4.6.0 (routine-update)
+
+ -- Nilesh Patra <nilesh@debian.org>  Sat, 09 Oct 2021 18:44:47 +0000
+
+r-cran-lifecycle (1.0.0-1) unstable; urgency=medium
+
+  * New upstream version
+  * Standards-Version: 4.5.1 (routine-update)
+  * debhelper-compat 13 (routine-update)
+
+ -- Andreas Tille <tille@debian.org>  Tue, 17 Aug 2021 09:00:52 +0200
+
+r-cran-lifecycle (0.2.0-2) unstable; urgency=medium
+
+  * Rules-Requires-Root: no (routine-update)
+
+ -- Andreas Tille <tille@debian.org>  Sat, 16 May 2020 20:59:15 +0200
+
+r-cran-lifecycle (0.2.0-1) unstable; urgency=medium
+
+  * New upstream version
+  * Standards-Version: 4.5.0 (routine-update)
+  * Add salsa-ci file (routine-update)
+  * Set upstream metadata fields: Bug-Submit, Repository.
+
+ -- Andreas Tille <tille@debian.org>  Tue, 10 Mar 2020 11:52:59 +0100
+
+r-cran-lifecycle (0.1.0-2) unstable; urgency=medium
+
+  * Standards-Version: 4.4.1
+  * Trim trailing whitespace.
+  * Set upstream metadata fields: Archive, Bug-Database, Repository.
+  * Hack around non-functional test suite
+
+ -- Andreas Tille <tille@debian.org>  Thu, 14 Nov 2019 10:58:40 +0100
+
+r-cran-lifecycle (0.1.0-1) unstable; urgency=medium
+
+  * Initial release (closes: #940675)
+
+ -- Andreas Tille <tille@debian.org>  Wed, 18 Sep 2019 22:38:08 +0200

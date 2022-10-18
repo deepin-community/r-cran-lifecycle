@@ -1,0 +1,33 @@
+Source: r-cran-lifecycle
+Maintainer: Debian R Packages Maintainers <r-pkg-team@alioth-lists.debian.net>
+Uploaders: Andreas Tille <tille@debian.org>
+Section: gnu-r
+Testsuite: autopkgtest-pkg-r
+Priority: optional
+Build-Depends: debhelper-compat (= 13),
+               dh-r,
+               r-base-dev,
+               r-cran-glue,
+               r-cran-rlang (>= 0.4.10)
+Standards-Version: 4.6.0
+Vcs-Browser: https://salsa.debian.org/r-pkg-team/r-cran-lifecycle
+Vcs-Git: https://salsa.debian.org/r-pkg-team/r-cran-lifecycle.git
+Homepage: https://cran.r-project.org/package=lifecycle
+Rules-Requires-Root: no
+
+Package: r-cran-lifecycle
+Architecture: all
+Depends: ${R:Depends},
+         ${misc:Depends}
+Recommends: ${R:Recommends}
+Suggests: ${R:Suggests}
+Description: manage the life cycle of your GNU R package functions
+ Manage the life cycle of your exported functions with
+ shared conventions, documentation badges, and non-invasive
+ deprecation warnings. The 'lifecycle' package defines four
+ development stages (experimental, maturing, stable, and
+ questioning) and three deprecation stages (soft-deprecated,
+ deprecated, and defunct). It makes it easy to insert badges
+ corresponding to these stages in your documentation. Usage of
+ deprecated functions are signalled with increasing levels of
+ non-invasive verbosity.
