@@ -1,52 +1,59 @@
-
-spec <- function(spec, env = caller_env(), signaller = "signal_lifecycle") {
-  what <- spec_what(spec, "spec", signaller)
-  fn <- spec_fn(what$call)
-  arg <- spec_arg(what$call, signaller)
-  reason <- spec_reason(what$call, signaller)
-
-  if (is_null(what$pkg) && !is.null(env)) {
-    pkg <- spec_package(env, signaller = signaller)
-  } else {
-    pkg <- what$pkg
-  }
-
-  list(
-    fn = fn,
-    arg = arg,
-    pkg = pkg,
-    reason = reason,
-    from = signaller
+spec <- function(spec,
+                 env = caller_env(),
+                 signaller = "signal_lifecycle",
+                 error_call = caller_env()) {
+  ctxt <- list(
+    signaller = signaller,
+    call = error_call
   )
+
+  if (inherits(spec, "AsIs")) {
+    list(
+      fn = spec,
+      arg = NULL,
+      pkg = spec_pkg(NULL, env, ctxt = ctxt),
+      reason = NULL,
+      from = signaller
+    )
+  } else {
+    what <- parse_what(spec, ctxt = ctxt)
+
+    list(
+      fn = spec_fn(what$call, ctxt = ctxt),
+      arg = spec_arg(what$call, ctxt = ctxt),
+      pkg = spec_pkg(what$pkg, env, ctxt = ctxt),
+      reason = spec_reason(what$call, ctxt = ctxt),
+      from = signaller
+    )
+  }
 }
 
-spec_what <- function(what, arg, signaller) {
-  if (is_string(what)) {
-    call <- parse_expr(what)
-  } else {
-    lifecycle_abort("`what` must be a string.")
-  }
+parse_what <- function(what, ctxt) {
+  check_string(what, call = ctxt$call)
+
+  call <- parse_expr(what)
 
   if (!is_call(call)) {
     what <- as_string(what)
-    lifecycle_abort(
-      "
-      `what` must have function call syntax.
-
-        # Good:
-        { signaller }(\"{what}()\")
-
-        # Bad:
-        { signaller }(\"{what}\")
-
-      "
+    cli::cli_abort(
+      c(
+        "{.arg what} must have function call syntax.",
+        "",
+        " " = "# Good:",
+        " " = "{ ctxt$signaller }(\"{what}()\")",
+        "",
+        " " = "# Bad:",
+        " " = "{ ctxt$signaller }(\"{what}\")"
+      ),
+      call = ctxt$call,
+      arg = "what"
     )
   }
 
-  head <- node_car(call)
+  head <- call[[1]]
   if (is_call(head, "::")) {
-    pkg <- as_string(node_cadr(head))
-    call[[1]] <- node_cadr(node_cdr(head))
+    pkg <- as_string(head[[2]])
+    call[[1]] <- head[[3]]
   } else {
     pkg <- NULL
   }
@@ -54,18 +61,22 @@ spec_what <- function(what, arg, signaller) {
   list(pkg = pkg, call = call)
 }
 
-spec_fn <- function(call) {
+spec_fn <- function(call, ctxt) {
   fn <- node_car(call)
 
   if (!is_symbol(fn) && !is_call(fn, "$")) {
-    lifecycle_abort("`what` must be a function or method call.")
+    cli::cli_abort(
+      "{.arg what} must be a function or method call.",
+      call = ctxt$call,
+      arg = "what"
+    )
   }
 
   # Deparse so non-syntactic names are backticked
-  expr_deparse(fn)
+  deparse(fn)
 }
 
-spec_arg <- function(call, signaller) {
+spec_arg <- function(call, ctxt) {
   arg <- node_cdr(call)
 
   if (is_null(arg)) {
@@ -75,7 +86,10 @@ spec_arg <- function(call, signaller) {
   if (length(arg) != 1L) {
     fn <- as_label(node_car(call))
     n <- length(arg)
-    lifecycle_abort("Function in `what` ({fn}) must have 1 argument, not {n}.")
+    cli::cli_abort(
+      "Function in {.arg what} ({fn}) must have 1 argument, not {n}.",
+      call = ctxt$call
+    )
   }
 
   if (is_null(node_tag(arg))) {
@@ -85,7 +99,7 @@ spec_arg <- function(call, signaller) {
   }
 }
 
-spec_reason <- function(call, signaller) {
+spec_reason <- function(call, ctxt) {
   arg <- node_cdr(call)
 
   if (is_null(arg)) {
@@ -100,46 +114,52 @@ spec_reason <- function(call, signaller) {
     return(NULL)
   }
 
-  if (is_string(node_car(arg)))  {
+  if (is_string(node_car(arg))) {
     return(node_car(arg))
   }
 
-  fn <- expr_deparse(node_car(call))
-  lifecycle_abort(
-    "
-    `what` must contain reason as a string on the RHS of `=`.
-
-      # Good:
-      {signaller}(\"{fn}(arg = 'must be a string')\")
-
-      # Bad:
-      {signaller}(\"{fn}(arg = 42)\")
-
-    "
+  fn <- deparse(node_car(call))
+  cli::cli_abort(
+    c(
+      "{.arg what} must contain reason as a string on the RHS of `=`.",
+      "",
+      " " = "# Good:",
+      " " = "{ctxt$signaller}(\"{fn}(arg = 'must be a string')\")",
+      "",
+      " " = "# Bad:",
+      " " = "{ctxt$signaller}(\"{fn}(arg = 42)\")"
+    ),
+    call = ctxt$call
   )
 }
 
-spec_package <- function(env, signaller) {
+spec_pkg <- function(pkg, env, ctxt) {
+  if (!is_null(pkg) || is_null(env)) {
+    return(pkg)
+  }
+
   env <- topenv(env)
   if (is_reference(env, global_env())) {
     # Convenient for experimenting interactively
     return(getOption("lifecycle:::calling_package", "<NA>"))
   }
 
-  if(is_namespace(env)) {
+  if (is_namespace(env)) {
     return(ns_env_name(env))
   }
 
-  lifecycle_abort(
-    "
-    Can't detect the package of the deprecated function.
-    Please mention the namespace:
-
-      # Good:
-      { signaller }(what = \"namespace::myfunction()\")
-
-      # Bad:
-      { signaller }(what = \"myfunction()\")
-    "
+  cli::cli_abort(
+    c(
+      "Can't detect the package of the deprecated function.",
+      "Please mention the namespace:",
+      "",
+      " " = "# Good:",
+      " " = "{ ctxt$signaller }(what = \"namespace::myfunction()\")",
+      "",
+      " " = "# Bad:",
+      " " = "{ ctxt$signaller }(what = \"myfunction()\")",
+      ""
+    ),
+    call = ctxt$call
   )
 }

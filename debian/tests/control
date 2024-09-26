@@ -1,5 +1,13 @@
 Tests: run-unit-test
-Depends: @, r-cran-testthat,
+Depends: @,
+         r-cran-covr,
+        r-cran-crayon,
+        r-cran-knitr,
+        r-cran-lintr,
+        r-cran-rmarkdown,
+        r-cran-testthat (>= 3.0.1),
+        r-cran-tibble,
+        r-cran-tidyverse,
+        r-cran-vctrs,
+        r-cran-withr
 Restrictions: allow-stderr
-
-

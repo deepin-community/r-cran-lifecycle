@@ -2,13 +2,12 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/r-lib/lifecycle/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/lifecycle/actions) [![Codecov test coverage](https://codecov.io/gh/r-lib/lifecycle/branch/master/graph/badge.svg)](https://codecov.io/gh/r-lib/lifecycle?branch=master) [![CRAN status](https://www.r-pkg.org/badges/version/lifecycle)](https://CRAN.R-project.org/package=lifecycle) [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing)
-
+[![R-CMD-check](https://github.com/r-lib/lifecycle/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-lib/lifecycle/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 lifecycle provides a set of tools and conventions to manage the life cycle of your exported functions.
 
--   For a general motivation and introduction to the key concepts, watch Hadley's rstudio::global(2021) keynote ["Maintaining the house that the tidyverse built"](https://www.rstudio.com/resources/rstudioglobal-2021/maintaining-the-house-the-tidyverse-built/).
+-   For a general motivation and introduction to the key concepts, watch Hadley's rstudio::global(2021) keynote ["Maintaining the house that the tidyverse built"](https://posit.co/resources/videos/maintaining-the-house-the-tidyverse-built/).
 
 -   Read `vignette("stages")` to learn what it means for a function to be experimental, stable, deprecated, or superseded.
 
@@ -23,5 +22,10 @@ lifecycle provides a set of tools and conventions to manage the life cycle of yo
 install.packages("lifecycle")
 
 # Install development version from GitHub
-devtools::install_github("r-lib/lifecycle")
+pak::pak("r-lib/lifecycle")
 ```
+
+
+## Code of Conduct
+
+Please note that the lifecycle project is released with a [Contributor Code of Conduct](https://lifecycle.r-lib.org/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
