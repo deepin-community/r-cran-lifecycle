@@ -12,8 +12,6 @@ NULL
   run_on_load()
 }
 
-# FIXME: Export from rlang
-sexp_address <- NULL
 on_load(
-  sexp_address <- env_get(ns_env("rlang"), "sexp_address")
+  local_use_cli()
 )

@@ -2,6 +2,7 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: lifecycle
 Upstream-Contact: Lionel Henry <lionel@rstudio.com>
 Source: https://cran.r-project.org/package=lifecycle
+Files-Excluded: */inst/doc/*.html
 
 Files: *
 Copyright: 2017-2019 Lionel Henry,

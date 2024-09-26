@@ -15,9 +15,10 @@ and whether the warning was already issued (see the help for
 You can control the level of verbosity with the global option
 \code{lifecycle_verbosity}. It can be set to:
 \itemize{
-\item \code{"default"} or \code{NULL} for the default non-disruptive settings.
-\item \code{"quiet"}, \code{"warning"} or \code{"error"} to force silence, warnings or
-errors for deprecated functions.
+\item \code{"quiet"} to suppress all deprecation messages.
+\item \code{"default"} or \code{NULL} to warn once every 8 hours.
+\item \code{"warning"} to warn every time.
+\item \code{"error"} to error instead of warning.
 }
 
 Note that functions calling \code{\link[=deprecate_stop]{deprecate_stop()}} invariably throw
@@ -35,18 +36,15 @@ if (rlang::is_installed("testthat")) {
   # Forcing the verbosity level is useful for unit testing. You can
   # force errors to test that the function is indeed deprecated:
   test_that("mytool is deprecated", {
-    rlang::with_options(lifecycle_verbosity = "error", {
-      expect_error(mytool(), class = "defunctError")
-    })
+    rlang::local_options(lifecycle_verbosity = "error")
+    expect_error(mytool(), class = "defunctError")
   })
 
   # Or you can enforce silence to safely test that the function
   # still works:
   test_that("mytool still works", {
-    rlang::with_options(lifecycle_verbosity = "quiet", {
-      expect_equal(mytool(), 100)
-    })
+    rlang::local_options(lifecycle_verbosity = "quiet")
+    expect_equal(mytool(), 100)
   })
 }
-
 }
